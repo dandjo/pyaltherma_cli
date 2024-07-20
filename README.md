@@ -12,7 +12,7 @@ python3 -m pip install pyaltherma
 deactivate
 ```
 
-The packages uses environment variables to configure the connection to the Altherma system.
+The packag uses environment variables to configure the connection to the Altherma system.
 You can set the environment variables in the shell or in a file that is sourced by the shell.
 
 ```bash
