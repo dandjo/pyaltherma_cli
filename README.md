@@ -21,7 +21,7 @@ export PYALTHERMA_CLI_HOST=192.168.1.5
 
 ## Usage
 
-The module provides a bash script that can be used to run the CLI. It uses the virtual env as crated in the installation section.
+The module provides a bash script that can be used to run the CLI. It uses the virtual env as created in the installation section.
 Otherwise, you can run the CLI directly from the Python interpreter in an environment of your choice.
 You can read and write defined items from the API via arguments. If you pass a value, it will be written. Mix them as you like. The output is a JSON object.
 
