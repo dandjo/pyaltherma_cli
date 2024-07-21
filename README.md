@@ -3,7 +3,7 @@ Provides a command-line interface for [pyaltherma](https://github.com/tadasdanie
 
 ## Installation
 
-This is just an example of how to install the package. You can install it in any way you like.
+This is just an example of how to install the module. You can install it in any way you like.
 
 ```bash
 python3 -m venv ~/.venv/pyaltherma_cli
@@ -12,7 +12,7 @@ python3 -m pip install pyaltherma
 deactivate
 ```
 
-The packag uses environment variables to configure the connection to the Altherma system.
+The module uses environment variables to configure the connection to the Altherma system.
 You can set the environment variables in the shell or in a file that is sourced by the shell.
 
 ```bash
@@ -21,8 +21,9 @@ export PYALTHERMA_CLI_HOST=192.168.1.5
 
 ## Usage
 
-The package provides a bash script that can be used to run the CLI. Otherwise, you can run the CLI directly from the Python interpreter.
-You can get and set defined items from the API via "get" and "set" arguments. You can mix them as you like. The output is a JSON object.
+The module provides a bash script that can be used to run the CLI. It uses the virtual env as crated in the installation section.
+Otherwise, you can run the CLI directly from the Python interpreter in an environment of your choice.
+You can get and set defined items from the API via "get" and "set" arguments. Mix them as you like. The output is a JSON object.
 
 ```bash
 python3 -m pyaltherma_cli -get <item> -set <item> <value>
