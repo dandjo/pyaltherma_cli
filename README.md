@@ -23,16 +23,16 @@ export PYALTHERMA_CLI_HOST=192.168.1.5
 
 The module provides a bash script that can be used to run the CLI. It uses the virtual env as crated in the installation section.
 Otherwise, you can run the CLI directly from the Python interpreter in an environment of your choice.
-You can get and set defined items from the API via "get" and "set" arguments. Mix them as you like. The output is a JSON object.
+You can read and write defined items from the API via arguments. If you pass a value, it will be written. Mix them as you like. The output is a JSON object.
 
 ```bash
-python3 -m pyaltherma_cli -get <item> -set <item> <value>
+python3 -m pyaltherma_cli -item <item> -item <item> <value>
 ```
 
 The following example shows how to run the CLI by setting the domestic hot water to "on" and the setpoint to 50 degrees. At the same time we request the current temperature of the domestic hot water.
 
 ```bash
-python3 -m pyaltherma_cli -set dhw_power 1 -set dhw_target_temp 50 -get dhw_temp
+python3 -m pyaltherma_cli -item dhw_power 1 -item dhw_target_temp 50 -item dhw_temp
 ```
 
 This results in the following output.
