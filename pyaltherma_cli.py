@@ -14,7 +14,7 @@ async def main():
     parser.add_argument('-attr', metavar=('attr', 'value'), nargs='+', action='append', type=str)
     args = parser.parse_args()
     json_data = {}
-    daikin_host = os.environ.get('PYALTHERMA_CLI_HOST')
+    daikin_host = os.environ.get('PYALTHERMA_DAIKIN_HOST')
     async with aiohttp.ClientSession() as session:
         conn = DaikinWSConnection(session, daikin_host)
         device = AlthermaController(conn)
