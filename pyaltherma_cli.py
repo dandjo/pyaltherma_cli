@@ -11,7 +11,7 @@ from pyaltherma.controllers import AlthermaController, AlthermaClimateControlCon
 
 async def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-item', metavar=('item', 'value'), nargs='+', action='append', type=str)
+    parser.add_argument('-attr', metavar=('attr', 'value'), nargs='+', action='append', type=str)
     args = parser.parse_args()
     json_data = {}
     daikin_host = os.environ.get('PYALTHERMA_CLI_HOST')
@@ -19,7 +19,7 @@ async def main():
         conn = DaikinWSConnection(session, daikin_host)
         device = AlthermaController(conn)
         await device.discover_units()
-        for arg in args.item:
+        for arg in args.attr:
             if arg[0] == 'dhw_power':
                 try:
                     if arg[1] == '1':
