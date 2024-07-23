@@ -22,13 +22,13 @@ async def main():
         for arg in args.attr:
             if arg[0] == 'dhw_power':
                 try:
-                    if arg[1] == '1':
+                    if arg[1].upper() == 'ON' or arg[1] == '1':
                         device.hot_water_tank.turn_on()
-                    if arg[1] == '0':
+                    if arg[1].upper() == 'OFF' or arg[1] == '0':
                         device.hot_water_tank.turn_off()
                     json_data['dhw_power'] = arg[1]
                 except IndexError:
-                    json_data['dhw_power'] = '1' if device.hot_water_tank.is_turned_on() else '0'
+                    json_data['dhw_power'] = 'ON' if device.hot_water_tank.is_turned_on() else 'OFF'
             if arg[0] == 'dhw_temp':
                 json_data['dhw_temp'] = str(device.hot_water_tank.tank_temperature)
             if arg[0] == 'dhw_target_temp':
@@ -39,10 +39,10 @@ async def main():
                     json_data['dhw_target_temp'] = str(device.hot_water_tank.target_temperature)
             if arg[0] == 'dhw_powerful':
                 try:
-                    device.hot_water_tank.set_powerful(arg[1] == '1')
+                    device.hot_water_tank.set_powerful(arg[1].upper() == 'ON' or arg[1] == '1')
                     json_data['dhw_powerful'] = arg[1]
                 except IndexError:
-                    json_data['dhw_powerful'] = '1' if device.hot_water_tank.powerful else '0'
+                    json_data['dhw_powerful'] = 'ON' if device.hot_water_tank.powerful else 'OFF'
             if arg[0] == 'indoor_temp':
                 json_data['indoor_temp'] = str(device.climate_control.indoor_temperature)
             if arg[0] == 'outdoor_temp':
@@ -53,13 +53,13 @@ async def main():
                 json_data['climate_control_cooling_config'] = device.climate_control.climate_control_cooling_configuration
             if arg[0] == 'climate_control_power':
                 try:
-                    if arg[1] == '1':
+                    if arg[1].upper() == 'ON' or arg[1] == '1':
                         device.climate_control.turn_on()
-                    if arg[1] == '0':
+                    if arg[1].upper() == 'OFF' or arg[1] == '0':
                         device.climate_control.turn_off()
                     json_data['climate_control_power'] = arg[1]
                 except IndexError:
-                    json_data['climate_control_power'] = '1' if device.climate_control.is_turned_on() else '0'
+                    json_data['climate_control_power'] = 'ON' if device.climate_control.is_turned_on() else 'OFF'
             if arg[0] == 'climate_control_mode':
                 try:
                     device.climate_control.set_operation_mode(arg[1])
