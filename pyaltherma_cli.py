@@ -5,8 +5,10 @@ import json
 import os
 
 from pyaltherma.comm import DaikinWSConnection
-from pyaltherma.controllers import AlthermaController, AlthermaClimateControlController, AlthermaUnitController, \
-    AlthermaWaterTankController
+from pyaltherma.controllers import AlthermaController
+
+
+ALTHERMA_HOST = os.environ.get('PYALTHERMA_HOST')
 
 
 async def main():
@@ -14,9 +16,8 @@ async def main():
     parser.add_argument('-attr', metavar=('attr', 'value'), nargs='+', action='append', type=str)
     args = parser.parse_args()
     json_data = {}
-    daikin_host = os.environ.get('PYALTHERMA_DAIKIN_HOST')
     async with aiohttp.ClientSession() as session:
-        conn = DaikinWSConnection(session, daikin_host)
+        conn = DaikinWSConnection(session, ALTHERMA_HOST)
         device = AlthermaController(conn)
         await device.discover_units()
         for arg in args.attr:
