@@ -16,7 +16,7 @@ The module uses environment variables to configure the connection to the Altherm
 You can set the environment variables in the shell or in a file that is sourced by the shell.
 
 ```bash
-export PYALTHERMA_DAIKIN_HOST=192.168.1.5
+export PYALTHERMA_HOST=192.168.1.5
 ```
 
 ## Usage
