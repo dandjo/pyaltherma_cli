@@ -3,13 +3,12 @@ Provides a command-line interface for [pyaltherma](https://github.com/tadasdanie
 
 ## Installation
 
-This is just an example of how to install the module. You can install it in any way you like.
+This is just an example of how to install the module with a virtual environment.
 
 ```bash
 python3 -m venv ~/.venv/pyaltherma_cli
 source ~/.venv/pyaltherma_cli/bin/activate
 python3 -m pip install pyaltherma
-deactivate
 ```
 
 The module uses environment variables to configure the connection to the Altherma system.
@@ -21,12 +20,12 @@ export PYALTHERMA_HOST=192.168.1.5
 
 ## Usage
 
-The module provides a bash script that can be used to run the CLI. It uses the virtual env as created in the installation section.
+The module provides a bash script that can be used to run the CLI. It uses the virtual environment as created in the installation section.
 Otherwise, you can run the CLI directly from the Python interpreter in an environment of your choice.
 You can read and write defined attributes from the API via arguments. If you pass a value, it will be written. Mix them as you like. The output is a JSON object.
 
 ```bash
-python3 -m pyaltherma_cli -item <item> -item <item> <value>
+python3 -m pyaltherma_cli -attr <attribute> -attr <attribute> <value>
 ```
 
 The following example shows how to run the CLI by setting the domestic hot water to "on" and the setpoint to 50 degrees. At the same time we request the current temperature of the domestic hot water.
