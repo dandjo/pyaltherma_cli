@@ -70,9 +70,11 @@ async def main():
             if arg[0] == 'outdoor_temp':
                 json_data['outdoor_temp'] = str(await device.climate_control.outdoor_temperature)
             if arg[0] == 'climate_control_heating_config':
-                json_data['climate_control_heating_config'] = device.climate_control.climate_control_heating_configuration.value
+                config = device.climate_control.climate_control_heating_configuration
+                json_data['climate_control_heating_config'] = {'name': config.name, 'value': str(config.value)}
             if arg[0] == 'climate_control_cooling_config':
-                json_data['climate_control_cooling_config'] = device.climate_control.climate_control_cooling_configuration.value
+                config = device.climate_control.climate_control_cooling_configuration
+                json_data['climate_control_cooling_config'] = {'name': config.name, 'value': str(config.value)}
             if arg[0] == 'climate_control_power':
                 try:
                     if arg[1].upper() == 'ON' or arg[1] == '1':
@@ -87,7 +89,8 @@ async def main():
                     await device.climate_control.set_operation_mode(ClimateControlMode(arg[1]))
                 except IndexError:
                     pass
-                json_data['climate_control_mode'] = str((await device.climate_control.operation_mode).value)
+                mode = await device.climate_control.operation_mode
+                json_data['climate_control_mode'] = {'name': mode.name, 'value': str(mode.value)}
             if arg[0] == 'leaving_water_temp_current':
                 json_data['leaving_water_temp_current'] = str(await device.climate_control.leaving_water_temperature_current)
             if arg[0] == 'leaving_water_temp_offset_heating':
@@ -124,7 +127,7 @@ async def main():
                 json_data['leaving_water_temp_auto'] = str(await device.climate_control.leaving_water_temperature_auto)
         await device.get_current_state()
         await conn._client.close()
-    print(json.dumps(json_data))
+    print(json.dumps(json_data, indent=4))
 
 
 if __name__ == '__main__':
