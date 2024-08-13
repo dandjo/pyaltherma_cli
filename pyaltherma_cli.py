@@ -12,6 +12,10 @@ from pyaltherma.const import ClimateControlMode
 ALTHERMA_HOST = os.environ.get('PYALTHERMA_HOST')
 
 
+async def create_coro(routine, callback, output, prop):
+    value = await routine
+    output[prop] = callback(value)
+
 async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-prop', metavar=('prop', 'value'), nargs='+', action='append', type=str)
@@ -41,6 +45,7 @@ async def main():
                 ['leaving_water_temp_cooling'],
                 ['leaving_water_temp_auto'],
             ]
+        tasks = []
         for arg in args.prop:
             if arg[0] == 'dhw_power':
                 try:
@@ -50,31 +55,31 @@ async def main():
                         await device.hot_water_tank.turn_off()
                 except IndexError:
                     pass
-                json_data['dhw_power'] = 'ON' if await device.hot_water_tank.is_turned_on else 'OFF'
+                tasks.append(asyncio.create_task(create_coro(device.hot_water_tank.is_turned_on, lambda value: 'ON' if value else 'OFF', json_data, arg[0])))
             if arg[0] == 'dhw_temp':
-                json_data['dhw_temp'] = str(await device.hot_water_tank.tank_temperature)
+                tasks.append(asyncio.create_task(create_coro(device.hot_water_tank.tank_temperature, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'dhw_target_temp':
                 try:
                     await device.hot_water_tank.set_target_temperature(float(arg[1]))
                 except IndexError:
                     pass
-                json_data['dhw_target_temp'] = str(await device.hot_water_tank.target_temperature)
+                tasks.append(asyncio.create_task(create_coro(device.hot_water_tank.target_temperature, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'dhw_powerful':
                 try:
                     await device.hot_water_tank.set_powerful(arg[1].upper() == 'ON' or arg[1] == '1')
                 except IndexError:
                     pass
-                json_data['dhw_powerful'] = 'ON' if await device.hot_water_tank.powerful else 'OFF'
+                tasks.append(asyncio.create_task(create_coro(device.hot_water_tank.powerful, lambda value: 'ON' if value else 'OFF', json_data, arg[0])))
             if arg[0] == 'indoor_temp':
-                json_data['indoor_temp'] = str(await device.climate_control.indoor_temperature)
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.indoor_temperature, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'outdoor_temp':
-                json_data['outdoor_temp'] = str(await device.climate_control.outdoor_temperature)
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.outdoor_temperature, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'climate_control_heating_config':
                 config = device.climate_control.climate_control_heating_configuration
-                json_data['climate_control_heating_config'] = {'name': config.name, 'value': str(config.value)}
+                json_data[arg[0]] = {'name': config.name, 'value': str(config.value)}
             if arg[0] == 'climate_control_cooling_config':
                 config = device.climate_control.climate_control_cooling_configuration
-                json_data['climate_control_cooling_config'] = {'name': config.name, 'value': str(config.value)}
+                json_data[arg[0]] = {'name': config.name, 'value': str(config.value)}
             if arg[0] == 'climate_control_power':
                 try:
                     if arg[1].upper() == 'ON' or arg[1] == '1':
@@ -83,49 +88,48 @@ async def main():
                         await device.climate_control.turn_off()
                 except IndexError:
                     pass
-                json_data['climate_control_power'] = 'ON' if await device.climate_control.is_turned_on else 'OFF'
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.is_turned_on, lambda value: 'ON' if value else 'OFF', json_data, arg[0])))
             if arg[0] == 'climate_control_mode':
                 try:
                     await device.climate_control.set_operation_mode(ClimateControlMode(arg[1]))
                 except IndexError:
                     pass
-                mode = await device.climate_control.operation_mode
-                json_data['climate_control_mode'] = {'name': mode.name, 'value': str(mode.value)}
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.operation_mode, lambda v: {'name': v.name, 'value': v.value}, json_data, arg[0])))
             if arg[0] == 'leaving_water_temp_current':
-                json_data['leaving_water_temp_current'] = str(await device.climate_control.leaving_water_temperature_current)
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.leaving_water_temperature_current, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'leaving_water_temp_offset_heating':
                 try:
                     await device.climate_control.set_leaving_water_temperature_offset_heating(round(float(arg[1])))
                 except IndexError:
                     pass
-                json_data['leaving_water_temp_offset_heating'] = str(await device.climate_control.leaving_water_temperature_offset_heating)
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.leaving_water_temperature_offset_heating, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'leaving_water_temp_offset_cooling':
                 try:
                     await device.climate_control.set_leaving_water_temperature_offset_cooling(round(float(arg[1])))
                 except IndexError:
                     pass
-                json_data['leaving_water_temp_offset_cooling'] = str(await device.climate_control.leaving_water_temperature_offset_cooling)
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.leaving_water_temperature_offset_cooling, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'leaving_water_temp_offset_auto':
                 try:
                     await device.climate_control.set_leaving_water_temperature_offset_auto(round(float(arg[1])))
                 except IndexError:
                     pass
-                json_data['leaving_water_temp_offset_auto'] = str(await device.climate_control.leaving_water_temperature_offset_auto)
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.leaving_water_temperature_offset_auto, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'leaving_water_temp_heating':
                 try:
                     await device.climate_control.set_leaving_water_temperature_heating(round(float(arg[1])))
                 except IndexError:
                     pass
-                json_data['leaving_water_temp_heating'] = str(await device.climate_control.leaving_water_temperature_heating)
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.leaving_water_temperature_heating, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'leaving_water_temp_cooling':
                 try:
                     await device.climate_control.set_leaving_water_temperature_cooling(round(float(arg[1])))
                 except IndexError:
                     pass
-                json_data['leaving_water_temp_cooling'] = str(await device.climate_control.leaving_water_temperature_cooling)
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.leaving_water_temperature_cooling, lambda v: str(v), json_data, arg[0])))
             if arg[0] == 'leaving_water_temp_auto':
-                json_data['leaving_water_temp_auto'] = str(await device.climate_control.leaving_water_temperature_auto)
-        await device.get_current_state()
+                tasks.append(asyncio.create_task(create_coro(device.climate_control.leaving_water_temperature_auto, lambda v: str(v), json_data, arg[0])))
+        await asyncio.wait(tasks)
         await conn._client.close()
     print(json.dumps(json_data, indent=4))
 
