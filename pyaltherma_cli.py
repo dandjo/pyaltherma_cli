@@ -32,6 +32,7 @@ async def main():
                 ['dhw_power'],
                 ['dhw_temp'],
                 ['dhw_target_temp'],
+                ['dhw_temp_heating'],
                 ['dhw_powerful'],
                 ['indoor_temp'],
                 ['outdoor_temp'],
@@ -66,6 +67,12 @@ async def main():
                 except IndexError:
                     pass
                 create_task(tasks, device.hot_water_tank.target_temperature, lambda v: str(v), json_data, arg[0])
+            if arg[0] == 'dhw_temp_heating':
+                try:
+                    await device.hot_water_tank.set_domestic_hot_water_temperature_heating(float(arg[1]))
+                except IndexError:
+                    pass
+                create_task(tasks, device.hot_water_tank.domestic_hot_water_temperature_heating, lambda v: str(v), json_data, arg[0])
             if arg[0] == 'dhw_powerful':
                 try:
                     await device.hot_water_tank.set_powerful(arg[1].upper() == 'ON' or arg[1] == '1')
