@@ -23,7 +23,7 @@ export PYALTHERMA_HOST=192.168.1.5
 
 The module provides a bash script that can be used to run the CLI. It uses the virtual env as created in the installation section.
 Otherwise, you can run the CLI directly from the Python interpreter in an environment of your choice.
-You can read and write defined attributes from the API via arguments. If you pass a value, it will be written. Mix them as you like. The output is a JSON object.
+You can read and write defined properties from the API via arguments. If you pass a value, it will be written. Mix them as you like. The output is a JSON object.
 
 ```bash
 python3 -m pyaltherma_cli -item <item> -item <item> <value>
@@ -32,7 +32,7 @@ python3 -m pyaltherma_cli -item <item> -item <item> <value>
 The following example shows how to run the CLI by setting the domestic hot water to "on" and the setpoint to 50 degrees. At the same time we request the current temperature of the domestic hot water.
 
 ```bash
-python3 -m pyaltherma_cli -attr dhw_power 1 -attr dhw_target_temp 50 -attr dhw_temp
+python3 -m pyaltherma_cli -prop dhw_power 1 -prop dhw_target_temp 50 -prop dhw_temp
 ```
 
 This results in the following output.
@@ -45,9 +45,9 @@ This results in the following output.
 }
 ```
 
-## Implemented attributes
+## Implemented properties
 
-| Attribute                         | Description                                  | Read | Write | Values                                                       | Limitations                                                                                      |
+| Property                          | Description                                  | Read | Write | Values                                                       | Limitations                                                                                      |
 |-----------------------------------|----------------------------------------------|------|-------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | dhw_power                         | Domestic hot water power                     | ✓    | ✓     | "ON", "OFF"                                                  |                                                                                                  |
 | dhw_temp                          | Domestic hot water temperature               | ✓    |       |                                                              |                                                                                                  |
