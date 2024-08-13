@@ -25,7 +25,7 @@ Otherwise, you can run the CLI directly from the Python interpreter in an enviro
 You can read and write defined properties from the API via arguments. If you pass a value, it will be written. Mix them as you like. The output is a JSON object.
 
 ```bash
-python3 -m pyaltherma_cli -attr <attribute> -attr <attribute> <value>
+python3 -m pyaltherma_cli -prop <property> -prop <property> <value>
 ```
 
 The following example shows how to run the CLI by setting the domestic hot water to "on" and the setpoint to 50 degrees. At the same time we request the current temperature of the domestic hot water.
