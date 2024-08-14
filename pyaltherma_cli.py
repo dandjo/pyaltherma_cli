@@ -58,7 +58,7 @@ async def main():
                         await device.hot_water_tank.turn_off()
                 except IndexError:
                     pass
-                create_task(tasks, device.hot_water_tank.is_turned_on, lambda value: 'ON' if value else 'OFF', json_data, arg[0])
+                create_task(tasks, device.hot_water_tank.is_turned_on, lambda v: 'ON' if v else 'OFF', json_data, arg[0])
             if arg[0] == 'dhw_temp':
                 create_task(tasks, device.hot_water_tank.tank_temperature, lambda v: str(v), json_data, arg[0])
             if arg[0] == 'dhw_target_temp':
@@ -78,7 +78,7 @@ async def main():
                     await device.hot_water_tank.set_powerful(arg[1].upper() == 'ON' or arg[1] == '1')
                 except IndexError:
                     pass
-                create_task(tasks, device.hot_water_tank.powerful, lambda value: 'ON' if value else 'OFF', json_data, arg[0])
+                create_task(tasks, device.hot_water_tank.powerful, lambda v: 'ON' if v else 'OFF', json_data, arg[0])
             if arg[0] == 'indoor_temp':
                 create_task(tasks, device.climate_control.indoor_temperature, lambda v: str(v), json_data, arg[0])
             if arg[0] == 'outdoor_temp':
@@ -97,7 +97,7 @@ async def main():
                         await device.climate_control.turn_off()
                 except IndexError:
                     pass
-                create_task(tasks, device.climate_control.is_turned_on, lambda value: 'ON' if value else 'OFF', json_data, arg[0])
+                create_task(tasks, device.climate_control.is_turned_on, lambda v: 'ON' if v else 'OFF', json_data, arg[0])
             if arg[0] == 'climate_control_mode':
                 try:
                     await device.climate_control.set_operation_mode(ClimateControlMode(arg[1]))
