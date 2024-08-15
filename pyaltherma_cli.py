@@ -119,10 +119,6 @@ async def main():
                     pass
                 create_task(tasks, device.climate_control.leaving_water_temperature_offset_cooling, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_offset_auto':
-                try:
-                    await device.climate_control.set_leaving_water_temperature_offset_auto(round(float(arg[1])))
-                except IndexError:
-                    pass
                 create_task(tasks, device.climate_control.leaving_water_temperature_offset_auto, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_heating':
                 try:
