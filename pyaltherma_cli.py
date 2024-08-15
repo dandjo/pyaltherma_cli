@@ -60,19 +60,19 @@ async def main():
                     pass
                 create_task(tasks, device.hot_water_tank.is_turned_on, lambda v: 'ON' if v else 'OFF', json_data, arg[0])
             if arg[0] == 'dhw_temp':
-                create_task(tasks, device.hot_water_tank.tank_temperature, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.hot_water_tank.tank_temperature, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'dhw_target_temp':
                 try:
                     await device.hot_water_tank.set_target_temperature(float(arg[1]))
                 except IndexError:
                     pass
-                create_task(tasks, device.hot_water_tank.target_temperature, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.hot_water_tank.target_temperature, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'dhw_temp_heating':
                 try:
                     await device.hot_water_tank.set_domestic_hot_water_temperature_heating(float(arg[1]))
                 except IndexError:
                     pass
-                create_task(tasks, device.hot_water_tank.domestic_hot_water_temperature_heating, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.hot_water_tank.domestic_hot_water_temperature_heating, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'dhw_powerful':
                 try:
                     await device.hot_water_tank.set_powerful(arg[1].upper() == 'ON' or arg[1] == '1')
@@ -80,9 +80,9 @@ async def main():
                     pass
                 create_task(tasks, device.hot_water_tank.powerful, lambda v: 'ON' if v else 'OFF', json_data, arg[0])
             if arg[0] == 'indoor_temp':
-                create_task(tasks, device.climate_control.indoor_temperature, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.indoor_temperature, lambda v: str(round(v, 1)), json_data, arg[0])
             if arg[0] == 'outdoor_temp':
-                create_task(tasks, device.climate_control.outdoor_temperature, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.outdoor_temperature, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'climate_control_heating_config':
                 config = device.climate_control.climate_control_heating_configuration
                 json_data[arg[0]] = {'name': config.name, 'value': str(config.value)}
@@ -105,39 +105,39 @@ async def main():
                     pass
                 create_task(tasks, device.climate_control.operation_mode, lambda v: {'name': v.name, 'value': v.value}, json_data, arg[0])
             if arg[0] == 'leaving_water_temp_current':
-                create_task(tasks, device.climate_control.leaving_water_temperature_current, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.leaving_water_temperature_current, lambda v: str(round(v, 1)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_offset_heating':
                 try:
                     await device.climate_control.set_leaving_water_temperature_offset_heating(round(float(arg[1])))
                 except IndexError:
                     pass
-                create_task(tasks, device.climate_control.leaving_water_temperature_offset_heating, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.leaving_water_temperature_offset_heating, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_offset_cooling':
                 try:
                     await device.climate_control.set_leaving_water_temperature_offset_cooling(round(float(arg[1])))
                 except IndexError:
                     pass
-                create_task(tasks, device.climate_control.leaving_water_temperature_offset_cooling, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.leaving_water_temperature_offset_cooling, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_offset_auto':
                 try:
                     await device.climate_control.set_leaving_water_temperature_offset_auto(round(float(arg[1])))
                 except IndexError:
                     pass
-                create_task(tasks, device.climate_control.leaving_water_temperature_offset_auto, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.leaving_water_temperature_offset_auto, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_heating':
                 try:
                     await device.climate_control.set_leaving_water_temperature_heating(round(float(arg[1])))
                 except IndexError:
                     pass
-                create_task(tasks, device.climate_control.leaving_water_temperature_heating, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.leaving_water_temperature_heating, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_cooling':
                 try:
                     await device.climate_control.set_leaving_water_temperature_cooling(round(float(arg[1])))
                 except IndexError:
                     pass
-                create_task(tasks, device.climate_control.leaving_water_temperature_cooling, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.leaving_water_temperature_cooling, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_auto':
-                create_task(tasks, device.climate_control.leaving_water_temperature_auto, lambda v: str(v), json_data, arg[0])
+                create_task(tasks, device.climate_control.leaving_water_temperature_auto, lambda v: str(round(v)), json_data, arg[0])
         await asyncio.wait(tasks)
         await conn._client.close()
     print(json.dumps(json_data, indent=4))
