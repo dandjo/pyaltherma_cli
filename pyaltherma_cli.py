@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import argparse
+import inspect
 import json
 import os
 
@@ -13,7 +14,13 @@ ALTHERMA_HOST = os.environ.get('PYALTHERMA_HOST')
 
 
 async def create_coro(value, callback, output, prop):
-    output[prop] = callback(await value)
+    if inspect.iscoroutinefunction(value):
+        v = await value()
+    elif inspect.isawaitable(value):
+        v = await value
+    else:
+        v = value
+    output[prop] = callback(v)
 
 def create_task(tasks, *args):
     tasks.append(asyncio.create_task(create_coro(*args)))
@@ -138,6 +145,10 @@ async def main():
                 create_task(tasks, device.climate_control.leaving_water_temperature_cooling, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_auto':
                 create_task(tasks, device.climate_control.leaving_water_temperature_auto, lambda v: str(round(v)), json_data, arg[0])
+            if arg[0] == 'dhw_consumptions':
+                create_task(tasks, device.hot_water_tank.read_consumptions, lambda v: v, json_data, arg[0])
+            if arg[0] == 'climate_control_consumptions':
+                create_task(tasks, device.climate_control.read_consumptions, lambda v: v, json_data, arg[0])
         await asyncio.wait(tasks)
         await conn._client.close()
     print(json.dumps(json_data, indent=4))
