@@ -11,6 +11,7 @@ from pyaltherma.const import ClimateControlMode
 
 
 ALTHERMA_HOST = os.environ.get('PYALTHERMA_HOST')
+ALTHERMA_TIMEOUT = float(os.environ.get('PYALTHERMA_TIMEOUT', 3))
 
 
 async def create_coro(value, callback, output, prop):
@@ -30,8 +31,8 @@ async def main():
     parser.add_argument('-prop', metavar=('prop', 'value'), nargs='+', action='append', type=str)
     args = parser.parse_args()
     json_data = {}
-    async with aiohttp.ClientSession() as session:
-        conn = DaikinWSConnection(session, ALTHERMA_HOST)
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(ALTHERMA_TIMEOUT)) as session:
+        conn = DaikinWSConnection(session, ALTHERMA_HOST, ALTHERMA_TIMEOUT)
         device = AlthermaController(conn)
         await device.discover_units()
         if not args.prop:
