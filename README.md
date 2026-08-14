@@ -3,6 +3,11 @@ Provides a command-line interface for [pyaltherma](https://github.com/tadasdanie
 
 ## Installation
 
+### Dependencies
+* `pyaltherma`
+
+### Environment
+
 This is just an example of how to install the module with a virtual environment.
 
 ```bash
@@ -11,12 +16,18 @@ source ~/.venv/pyaltherma_cli/bin/activate
 python3 -m pip install pyaltherma
 ```
 
-The module uses environment variables to configure the connection to the Altherma system.
-You can set the environment variables in the shell or in a file that is sourced by the shell.
+Before you start the script, take a look at the configurable environment variables. Some of them are mandatory.
 
-```bash
-export PYALTHERMA_HOST="192.168.1.5"
-export PYALTHERMA_TIMEOUT="3"
+| ENV                  | Default value | Mandatory | Description                                                         |
+|----------------------|---------------|-----------|---------------------------------------------------------------------|
+| `PYALTHERMA_HOST`    | None          | yes       | The host of the Daikin controller. Must be the IP to work properly. |
+| `PYALTHERMA_TIMEOUT` | 3             | no        | The timeout for the connection to the Daikin controller in seconds. |
+
+Copy/paste template for environment file (e.g. `~/.venv/pyaltherma_cli/.env` or `/etc/environment`):
+
+```
+PYALTHERMA_HOST="192.168.1.5"
+PYALTHERMA_TIMEOUT="3"
 ```
 
 ## Usage
@@ -26,7 +37,7 @@ pass a value, it will be written. Mix them as you like. Providing no arguments,
 all properties will be read. The output is a JSON object.
 
 ```bash
-python3 -m pyaltherma_cli -prop <property> -prop <property> <value>
+pyaltherma_cli -prop <property> -prop <property> <value>
 ```
 
 The following example shows how to run the CLI by setting the domestic hot water
@@ -34,7 +45,7 @@ to "on" and the setpoint to 50 degrees. At the same time we request the current
 temperature of the domestic hot water.
 
 ```bash
-python3 -m pyaltherma_cli -prop dhw_power ON -prop dhw_temp_heating 50 -prop dhw_temp
+pyaltherma_cli -prop dhw_power ON -prop dhw_temp_heating 50 -prop dhw_temp
 ```
 
 This results in the following output.
