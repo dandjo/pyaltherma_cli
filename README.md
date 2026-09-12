@@ -36,6 +36,11 @@ You can read and write defined properties from the API via arguments. If you
 pass a value, it will be written. Mix them as you like. Providing no arguments,
 all properties will be read. The output is a JSON object.
 
+A value is only written to the Daikin unit if it differs from the current state
+read from it. Passing a value that is already set therefore causes no write
+request. The comparison is done after normalizing the value (rounded
+temperatures, `ON`/`OFF` for switches).
+
 ```bash
 pyaltherma_cli -prop <property> -prop <property> <value>
 ```

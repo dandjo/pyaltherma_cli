@@ -14,17 +14,34 @@ ALTHERMA_HOST = os.environ.get('PYALTHERMA_HOST')
 ALTHERMA_TIMEOUT = float(os.environ.get('PYALTHERMA_TIMEOUT', 3))
 
 
-async def create_coro(value, callback, output, prop):
+async def resolve(value):
     if inspect.iscoroutinefunction(value):
-        v = await value()
-    elif inspect.isawaitable(value):
-        v = await value
-    else:
-        v = value
-    output[prop] = callback(v)
+        return await value()
+    if inspect.isawaitable(value):
+        return await value
+    return value
+
+async def create_coro(value, callback, output, prop):
+    output[prop] = callback(await resolve(value))
 
 def create_task(tasks, *args):
     tasks.append(asyncio.create_task(create_coro(*args)))
+
+def parse_switch(value):
+    if value.upper() == 'ON' or value == '1':
+        return True
+    if value.upper() == 'OFF' or value == '0':
+        return False
+    return None
+
+async def write(current, normalize, value, operation):
+    """Calls the write operation only if the normalized current state of the unit differs from the value."""
+    try:
+        if normalize(await resolve(current)) == value:
+            return
+    except Exception:
+        pass  # current state unknown, write anyway
+    await operation()
 
 async def main():
     parser = argparse.ArgumentParser()
@@ -56,14 +73,17 @@ async def main():
                 ['leaving_water_temp_cooling'],
                 ['leaving_water_temp_auto'],
             ]
+        tank = device.hot_water_tank
+        climate = device.climate_control
         tasks = []
         for arg in args.prop:
             if arg[0] == 'dhw_power':
                 try:
-                    if arg[1].upper() == 'ON' or arg[1] == '1':
-                        await device.hot_water_tank.turn_on()
-                    if arg[1].upper() == 'OFF' or arg[1] == '0':
-                        await device.hot_water_tank.turn_off()
+                    switch = parse_switch(arg[1])
+                    if switch is True:
+                        await write(tank.is_turned_on, bool, True, tank.turn_on)
+                    if switch is False:
+                        await write(tank.is_turned_on, bool, False, tank.turn_off)
                 except IndexError:
                     pass
                 create_task(tasks, device.hot_water_tank.is_turned_on, lambda v: 'ON' if v else 'OFF', json_data, arg[0])
@@ -71,19 +91,22 @@ async def main():
                 create_task(tasks, device.hot_water_tank.tank_temperature, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'dhw_target_temp':
                 try:
-                    await device.hot_water_tank.set_target_temperature(float(arg[1]))
+                    value = round(float(arg[1]))
+                    await write(tank.target_temperature, round, value, lambda: tank.set_target_temperature(value))
                 except IndexError:
                     pass
                 create_task(tasks, device.hot_water_tank.target_temperature, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'dhw_temp_heating':
                 try:
-                    await device.hot_water_tank.set_domestic_hot_water_temperature_heating(float(arg[1]))
+                    value = round(float(arg[1]))
+                    await write(tank.domestic_hot_water_temperature_heating, round, value, lambda: tank.set_domestic_hot_water_temperature_heating(value))
                 except IndexError:
                     pass
                 create_task(tasks, device.hot_water_tank.domestic_hot_water_temperature_heating, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'dhw_powerful':
                 try:
-                    await device.hot_water_tank.set_powerful(arg[1].upper() == 'ON' or arg[1] == '1')
+                    value = parse_switch(arg[1]) is True
+                    await write(tank.powerful, bool, value, lambda: tank.set_powerful(value))
                 except IndexError:
                     pass
                 create_task(tasks, device.hot_water_tank.powerful, lambda v: 'ON' if v else 'OFF', json_data, arg[0])
@@ -99,16 +122,18 @@ async def main():
                 json_data[arg[0]] = {'name': config.name, 'value': str(config.value)}
             if arg[0] == 'climate_control_power':
                 try:
-                    if arg[1].upper() == 'ON' or arg[1] == '1':
-                        await device.climate_control.turn_on()
-                    if arg[1].upper() == 'OFF' or arg[1] == '0':
-                        await device.climate_control.turn_off()
+                    switch = parse_switch(arg[1])
+                    if switch is True:
+                        await write(climate.is_turned_on, bool, True, climate.turn_on)
+                    if switch is False:
+                        await write(climate.is_turned_on, bool, False, climate.turn_off)
                 except IndexError:
                     pass
                 create_task(tasks, device.climate_control.is_turned_on, lambda v: 'ON' if v else 'OFF', json_data, arg[0])
             if arg[0] == 'climate_control_mode':
                 try:
-                    await device.climate_control.set_operation_mode(ClimateControlMode(arg[1]))
+                    mode = ClimateControlMode(arg[1])
+                    await write(climate.operation_mode, lambda v: v, mode, lambda: climate.set_operation_mode(mode))
                 except IndexError:
                     pass
                 create_task(tasks, device.climate_control.operation_mode, lambda v: {'name': v.name, 'value': v.value}, json_data, arg[0])
@@ -116,31 +141,36 @@ async def main():
                 create_task(tasks, device.climate_control.leaving_water_temperature_current, lambda v: str(round(v, 1)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_offset_heating':
                 try:
-                    await device.climate_control.set_leaving_water_temperature_offset_heating(round(float(arg[1])))
+                    value = round(float(arg[1]))
+                    await write(climate.leaving_water_temperature_offset_heating, round, value, lambda: climate.set_leaving_water_temperature_offset_heating(value))
                 except IndexError:
                     pass
                 create_task(tasks, device.climate_control.leaving_water_temperature_offset_heating, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_offset_cooling':
                 try:
-                    await device.climate_control.set_leaving_water_temperature_offset_cooling(round(float(arg[1])))
+                    value = round(float(arg[1]))
+                    await write(climate.leaving_water_temperature_offset_cooling, round, value, lambda: climate.set_leaving_water_temperature_offset_cooling(value))
                 except IndexError:
                     pass
                 create_task(tasks, device.climate_control.leaving_water_temperature_offset_cooling, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_offset_auto':
                 try:
-                    await device.climate_control.set_leaving_water_temperature_offset_auto(round(float(arg[1])))
+                    value = round(float(arg[1]))
+                    await write(climate.leaving_water_temperature_offset_auto, round, value, lambda: climate.set_leaving_water_temperature_offset_auto(value))
                 except IndexError:
                     pass
                 create_task(tasks, device.climate_control.leaving_water_temperature_offset_auto, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_heating':
                 try:
-                    await device.climate_control.set_leaving_water_temperature_heating(round(float(arg[1])))
+                    value = round(float(arg[1]))
+                    await write(climate.leaving_water_temperature_heating, round, value, lambda: climate.set_leaving_water_temperature_heating(value))
                 except IndexError:
                     pass
                 create_task(tasks, device.climate_control.leaving_water_temperature_heating, lambda v: str(round(v)), json_data, arg[0])
             if arg[0] == 'leaving_water_temp_cooling':
                 try:
-                    await device.climate_control.set_leaving_water_temperature_cooling(round(float(arg[1])))
+                    value = round(float(arg[1]))
+                    await write(climate.leaving_water_temperature_cooling, round, value, lambda: climate.set_leaving_water_temperature_cooling(value))
                 except IndexError:
                     pass
                 create_task(tasks, device.climate_control.leaving_water_temperature_cooling, lambda v: str(round(v)), json_data, arg[0])
